@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Newsdeck — live headlines</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
+</head>
+<body>
+<div class="app">
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Categories menu">
+    <div class="brand">
+      <span class="brand-mark">📰</span>
+      <div>
+        <h1>Newsdeck</h1>
+        <p class="brand-sub">Live headlines</p>
+      </div>
+    </div>
+
+    <nav class="cats" id="cats" aria-label="Categories"></nav>
+
+    <div class="sidebar-foot">
+      <div class="live" id="live">
+        <span class="dot" id="liveDot"></span>
+        <span id="liveText">Connecting…</span>
+      </div>
+      <button class="ghost" id="sourcesBtn" type="button" aria-expanded="false">Source health</button>
+      <div class="sources" id="sources" hidden></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" type="button"
+              aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">☰</button>
+      <div class="search">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="search" type="search" placeholder="Filter headlines…  (press /)" autocomplete="off" spellcheck="false">
+        <button class="clear" id="clearSearch" type="button" hidden aria-label="Clear search">×</button>
+      </div>
+      <div class="topbar-actions">
+        <span class="live live-mini" id="liveMini" title="Connecting…"><span class="dot"></span></span>
+        <span class="updated" id="updated"></span>
+        <button class="icon-btn" id="refreshBtn" type="button" title="Refresh now (r)" aria-label="Refresh now">⟳</button>
+        <button class="icon-btn" id="themeBtn" type="button" title="Toggle theme (t)" aria-label="Toggle theme">◑</button>
+      </div>
+    </header>
+
+    <div class="newbar" id="newbar" hidden>
+      <button id="newbarBtn" type="button"><span id="newCount">0</span> new stories — show</button>
+    </div>
+
+    <section class="feed" id="feed" aria-live="polite" aria-busy="true"></section>
+    <div class="empty" id="empty" hidden></div>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

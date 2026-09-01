@@ -1,0 +1,57 @@
+// Curated public RSS/Atom feeds. No API keys required.
+module.exports = {
+  top: [
+    { name: 'BBC',          url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
+    { name: 'Al Jazeera',   url: 'https://www.aljazeera.com/xml/rss/all.xml' },
+    { name: 'NPR',          url: 'https://feeds.npr.org/1001/rss.xml' },
+    { name: 'Guardian',     url: 'https://www.theguardian.com/world/rss' },
+    { name: 'Sky News',     url: 'https://feeds.skynews.com/feeds/rss/world.xml' },
+    { name: 'DW',           url: 'https://rss.dw.com/rdf/rss-en-world' },
+    { name: 'France 24',    url: 'https://www.france24.com/en/rss' },
+    { name: 'CBS News',     url: 'https://www.cbsnews.com/latest/rss/world' },
+  ],
+  india: [
+    { name: 'Times of India', url: 'https://timesofindia.indiatimes.com/rssfeedstopstories.cms' },
+    { name: 'The Hindu',      url: 'https://www.thehindu.com/news/national/feeder/default.rss' },
+    { name: 'NDTV',           url: 'https://feeds.feedburner.com/ndtvnews-top-stories' },
+    { name: 'Indian Express', url: 'https://indianexpress.com/section/india/feed/' },
+    { name: 'BBC India',      url: 'https://feeds.bbci.co.uk/news/world/asia/india/rss.xml' },
+    { name: 'Firstpost',      url: 'https://www.firstpost.com/commonfeeds/v1/mfp/rss/india.xml' },
+  ],
+  tech: [
+    { name: 'Hacker News',  url: 'https://hnrss.org/frontpage?points=100' },
+    { name: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/index' },
+    { name: 'The Verge',    url: 'https://www.theverge.com/rss/index.xml' },
+    { name: 'TechCrunch',   url: 'https://techcrunch.com/feed/' },
+    { name: 'Wired',        url: 'https://www.wired.com/feed/rss' },
+    { name: 'Engadget',     url: 'https://www.engadget.com/rss.xml' },
+    { name: 'BBC Tech',     url: 'https://feeds.bbci.co.uk/news/technology/rss.xml' },
+  ],
+  business: [
+    { name: 'CNBC',          url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10001147' },
+    { name: 'BBC Business',  url: 'https://feeds.bbci.co.uk/news/business/rss.xml' },
+    { name: 'Guardian Biz',  url: 'https://www.theguardian.com/uk/business/rss' },
+    { name: 'MarketWatch',   url: 'https://feeds.content.dowjones.io/public/rss/mw_topstories' },
+    { name: 'Economic Times',url: 'https://economictimes.indiatimes.com/rssfeedstopstories.cms' },
+  ],
+  science: [
+    { name: 'NASA',          url: 'https://www.nasa.gov/news-release/feed/' },
+    { name: 'Phys.org',      url: 'https://phys.org/rss-feed/' },
+    { name: 'ScienceDaily',  url: 'https://www.sciencedaily.com/rss/top/science.xml' },
+    { name: 'Nature',        url: 'https://www.nature.com/nature.rss' },
+    { name: 'BBC Science',   url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml' },
+    { name: 'Quanta',        url: 'https://api.quantamagazine.org/feed/' },
+  ],
+  sports: [
+    { name: 'BBC Sport',     url: 'https://feeds.bbci.co.uk/sport/rss.xml' },
+    { name: 'Sky Sports',    url: 'https://www.skysports.com/rss/12040' },
+    { name: 'ESPN',          url: 'https://www.espn.com/espn/rss/news' },
+    { name: 'Guardian Sport',url: 'https://www.theguardian.com/uk/sport/rss' },
+  ],
+  entertainment: [
+    { name: 'Variety',       url: 'https://variety.com/feed/' },
+    { name: 'Hollywood Rep', url: 'https://www.hollywoodreporter.com/feed/' },
+    { name: 'BBC Ents',      url: 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml' },
+    { name: 'Pitchfork',     url: 'https://pitchfork.com/feed/feed-news/rss' },
+  ],
+};
