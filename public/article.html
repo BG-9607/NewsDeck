@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Article — Newsdeck</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
+</head>
+<body class="article-page-body">
+
+<header class="article-topbar">
+  <div class="article-topbar-inner">
+    <a href="/" class="article-back-btn" id="backBtn" title="Back to Headlines (Esc or Backspace)">
+      <span class="back-arrow">←</span>
+      <span>Newsdeck</span>
+    </a>
+    <div class="article-topbar-center" id="topbarCategory"></div>
+    <div class="article-topbar-actions">
+      <button class="icon-btn" id="copyArticleBtn" type="button" title="Copy article link" aria-label="Copy article link">📋</button>
+      <a class="icon-btn" id="extArticleBtn" href="#" target="_blank" rel="noopener noreferrer" title="Open source in new tab" aria-label="Open source in new tab">↗</a>
+      <button class="icon-btn" id="themeBtn" type="button" title="Toggle theme (t)" aria-label="Toggle theme">◑</button>
+    </div>
+  </div>
+</header>
+
+<main class="article-main">
+  <article class="article-container" id="articleContainer">
+    <div class="article-header">
+      <div class="article-meta">
+        <span class="badge" id="artSource">News</span>
+        <span class="article-category-badge" id="artCategory"></span>
+        <span class="time" id="artTime"></span>
+        <span class="article-author" id="artAuthor"></span>
+        <span class="article-readtime" id="artReadTime"></span>
+      </div>
+      <h1 class="article-heading" id="artTitle">Loading story…</h1>
+      
+      <div class="article-also" id="artAlso" hidden>
+        <span class="article-also-label">Also reported by:</span>
+        <div class="article-also-tags" id="artAlsoTags"></div>
+      </div>
+    </div>
+
+    <div class="article-hero" id="artHero" hidden>
+      <img class="article-hero-img" id="artImg" alt="" />
+      <div class="article-hero-caption" id="artImgCaption" hidden></div>
+    </div>
+
+    <div class="article-lead-box" id="artLeadBox" hidden>
+      <div class="article-lead-tag">Overview</div>
+      <p class="article-lead-text" id="artLeadText"></p>
+    </div>
+
+    <div class="article-body-content" id="artBody">
+      <div class="article-loading-sk" id="artLoading">
+        <div class="sk line" style="height:14px;border-radius:6px;margin-bottom:12px"></div>
+        <div class="sk line" style="height:14px;border-radius:6px;margin-bottom:12px"></div>
+        <div class="sk line short" style="height:14px;width:55%;border-radius:6px;margin-bottom:12px"></div>
+        <div class="sk line" style="height:14px;border-radius:6px;margin-bottom:12px"></div>
+        <div class="sk line" style="height:14px;border-radius:6px;margin-bottom:12px"></div>
+      </div>
+    </div>
+
+
+    <div class="article-footer-cta">
+      <div class="article-cta-card">
+        <div class="article-cta-info">
+          <h3>Original Source & Full Reporting</h3>
+          <p>Read the complete, unedited coverage directly on <strong id="ctaSourceName">source</strong>.</p>
+        </div>
+        <a class="article-cta-btn" id="artCtaLink" href="#" target="_blank" rel="noopener noreferrer">
+          <span>Read on <span id="ctaBtnSourceName">Source</span></span>
+          <span class="arrow-icon">↗</span>
+        </a>
+      </div>
+    </div>
+  </article>
+
+  <section class="related-section" id="relatedSection">
+    <div class="related-inner">
+      <h2 class="related-heading">More from <span id="relatedCatName">this category</span></h2>
+      <div class="related-grid" id="relatedGrid"></div>
+    </div>
+  </section>
+</main>
+
+<script src="/article.js"></script>
+</body>
+</html>

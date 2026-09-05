@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const FEEDS = require('./feeds');
 const { parseFeed, dedupeKey } = require('./parser');
+const { extractArticle } = require('./extractor');
 
 const PORT = Number(process.env.PORT) || 3000;
 const REFRESH_MS = Number(process.env.REFRESH_MS) || 90_000;
@@ -12,12 +13,15 @@ const FETCH_TIMEOUT_MS = 12_000;
 const MAX_ITEMS = 120;
 const MAX_AGE_MS = 36 * 3600_000; // retained stories older than this are dropped
 const ACTIVE_WINDOW_MS = 10 * 60_000; // only poll categories someone looked at recently
+const ARTICLE_CACHE_TTL_MS = 2 * 3600_000;
 
 const CATEGORIES = Object.keys(FEEDS);
 const UA = 'Mozilla/5.0 (compatible; NewsdeckBot/1.0; +local dashboard)';
 
 /** @type {Map<string, {items: any[], updatedAt: number, sources: any[]}>} */
 const cache = new Map();
+/** article URL -> { data: object, timestamp: number } */
+const articleCache = new Map();
 /** category -> timestamp of last client interest */
 const lastRequested = new Map();
 /** Set of SSE clients: { res, category, id } */
@@ -316,6 +320,50 @@ const server = http.createServer(async (req, res) => {
         : 'top';
       const entry = await refresh(category, { notify: true });
       return sendJSON(res, 200, { ok: true, updatedAt: entry?.updatedAt || 0 });
+    }
+
+    if (pathname === '/api/article') {
+      const target = (searchParams.get('url') || '').trim();
+      if (!target || !/^https?:\/\//i.test(target)) {
+        return sendJSON(res, 400, { ok: false, error: 'Valid URL is required' });
+      }
+
+      const cached = articleCache.get(target);
+      if (cached && Date.now() - cached.timestamp < ARTICLE_CACHE_TTL_MS) {
+        return sendJSON(res, 200, { ok: true, article: cached.data });
+      }
+
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10_000);
+        const resp = await fetch(target, {
+          signal: controller.signal,
+          redirect: 'follow',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+          },
+        }).finally(() => clearTimeout(timer));
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const html = await resp.text();
+        const article = extractArticle(html, target);
+
+        articleCache.set(target, { data: article, timestamp: Date.now() });
+        if (articleCache.size > 500) {
+          const firstKey = articleCache.keys().next().value;
+          articleCache.delete(firstKey);
+        }
+
+        return sendJSON(res, 200, { ok: true, article });
+      } catch (err) {
+        return sendJSON(res, 200, {
+          ok: false,
+          error: errLabel(err),
+          fallbackUrl: target,
+        });
+      }
     }
 
     if (pathname.startsWith('/api/')) return sendJSON(res, 404, { error: 'Unknown endpoint' });

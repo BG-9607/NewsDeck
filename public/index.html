@@ -56,6 +56,50 @@
     <section class="feed" id="feed" aria-live="polite" aria-busy="true"></section>
     <div class="empty" id="empty" hidden></div>
   </main>
+
+  <div class="reader-backdrop" id="readerBackdrop" hidden>
+    <div class="reader-modal" id="readerModal" role="dialog" aria-modal="true" aria-labelledby="readerTitle" tabindex="-1">
+      <div class="reader-header">
+        <div class="reader-nav-btns">
+          <button class="icon-btn" id="readerPrevBtn" type="button" title="Previous story (← or j)" aria-label="Previous story">‹</button>
+          <button class="icon-btn" id="readerNextBtn" type="button" title="Next story (→ or k)" aria-label="Next story">›</button>
+          <span class="reader-pos" id="readerPos"></span>
+        </div>
+        <div class="reader-actions">
+          <button class="icon-btn" id="readerCopyBtn" type="button" title="Copy article link" aria-label="Copy article link">📋</button>
+          <a class="icon-btn reader-ext-btn" id="readerExtBtn" href="#" target="_blank" rel="noopener noreferrer" title="Open source in new tab" aria-label="Open source in new tab">↗</a>
+          <button class="icon-btn reader-close-btn" id="readerCloseBtn" type="button" title="Close reader (Esc)" aria-label="Close reader">✕</button>
+        </div>
+      </div>
+
+      <article class="reader-content" id="readerContent">
+        <div class="reader-hero" id="readerHero" hidden>
+          <img class="reader-img" id="readerImg" alt="" />
+        </div>
+        <div class="reader-body">
+          <div class="reader-meta">
+            <span class="badge" id="readerSource"></span>
+            <span class="time" id="readerTime"></span>
+            <span class="reader-author" id="readerAuthor"></span>
+            <span class="reader-readtime" id="readerReadTime"></span>
+          </div>
+          <h1 class="reader-title" id="readerTitle"></h1>
+          <div class="reader-also" id="readerAlso" hidden>
+            <span class="reader-also-label">Also covered by:</span>
+            <div class="reader-also-tags" id="readerAlsoTags"></div>
+          </div>
+          <div class="reader-summary" id="readerSummary"></div>
+          
+          <div class="reader-footer">
+            <a class="reader-primary-btn" id="readerPrimaryLink" href="#" target="_blank" rel="noopener noreferrer">
+              <span>Read full coverage on <strong id="readerPrimarySource">source</strong></span>
+              <span class="arrow-icon">↗</span>
+            </a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
 </div>
 <script src="/app.js"></script>
 </body>

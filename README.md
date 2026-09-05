@@ -22,6 +22,7 @@ Then open <http://localhost:3000>.
   that stays tucked away until you press `☰` (or `m`), then slides in over the page. It closes
   on Escape, on a click outside, or once you've picked a category, so headlines get the full
   width of the window. Connection status stays visible as a dot in the toolbar.
+- **In-App Reader Modal.** Clicking any news card opens a distraction-free reader modal with the complete summary, reading time estimate, featured image, cross-source references, copyable article link, and quick jump to the original source.
 - **Cross-source de-duplication.** The same story from Reuters and the BBC collapses into one
   card, tagged "also on …".
 - **Source health.** A panel in the sidebar shows which feeds responded and how many items
@@ -41,7 +42,9 @@ Then open <http://localhost:3000>.
 | `1`–`7` | jump to category |
 | `r` | refresh now |
 | `t` | cycle theme |
-| `Esc` | close the menu, or leave search |
+| `←` / `j` | previous story (in reader modal) |
+| `→` / `k` | next story (in reader modal) |
+| `Esc` | close reader modal, close menu, or leave search |
 
 ## Configuration
 

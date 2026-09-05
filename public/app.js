@@ -22,6 +22,7 @@ const state = {
   updatedAt: 0,
   sources: [],
   es: null,
+  activeStoryId: null,
 };
 
 // ---------------------------------------------------------------- helpers
@@ -54,14 +55,27 @@ function safeUrl(raw) {
   } catch { return null; }
 }
 
+function articleUrl(item) {
+  const params = new URLSearchParams();
+  if (item.link) params.set('url', item.link);
+  params.set('category', state.category);
+  if (item.id) params.set('id', item.id);
+  if (item.title) params.set('title', item.title);
+  if (item.source) params.set('source', item.source);
+  if (item.summary) params.set('summary', item.summary);
+  if (item.image) params.set('image', item.image);
+  if (item.author) params.set('author', item.author);
+  if (item.publishedAt) params.set('publishedAt', String(item.publishedAt));
+  if (item.alsoIn && item.alsoIn.length) params.set('also', item.alsoIn.join(','));
+  return `/article.html?${params.toString()}`;
+}
+
 // ---------------------------------------------------------------- rendering
 
 function cardFor(item) {
-  const href = safeUrl(item.link);
   const card = el('a', 'card');
-  card.href = href || '#';
-  card.target = '_blank';
-  card.rel = 'noopener noreferrer';
+  card.href = articleUrl(item);
+  card.setAttribute('aria-label', `Read story: ${item.title}`);
   if (state.freshIds.has(item.id)) card.classList.add('fresh');
 
   const img = safeUrl(item.image);
@@ -89,6 +103,7 @@ function cardFor(item) {
   body.appendChild(el('h2', null, item.title));
   if (item.summary) body.appendChild(el('p', null, item.summary));
   card.appendChild(body);
+
   return card;
 }
 
@@ -150,6 +165,131 @@ function renderSources() {
 function showNewbar(count) {
   $('#newCount').textContent = count;
   newbar.hidden = false;
+}
+
+// ---------------------------------------------------------------- reader modal
+
+const readerBackdrop = () => $('#readerBackdrop');
+const readerModal = () => $('#readerModal');
+const readerIsOpen = () => !readerBackdrop().hidden && readerBackdrop().classList.contains('show');
+
+function estimateReadTime(text) {
+  if (!text) return '1 min read';
+  const words = text.trim().split(/\s+/).length;
+  const mins = Math.max(1, Math.round(words / 40));
+  return `${mins} min read`;
+}
+
+function openReader(item) {
+  state.activeStoryId = item.id;
+  const items = visibleItems();
+  const index = items.findIndex(i => i.id === item.id);
+
+  // Position indicator
+  const posEl = $('#readerPos');
+  if (posEl) {
+    posEl.textContent = index >= 0 ? `${index + 1} of ${items.length}` : '';
+  }
+
+  // Prev / Next button states
+  const prevBtn = $('#readerPrevBtn');
+  const nextBtn = $('#readerNextBtn');
+  if (prevBtn) prevBtn.disabled = items.length <= 1;
+  if (nextBtn) nextBtn.disabled = items.length <= 1;
+
+  // Hero image
+  const heroEl = $('#readerHero');
+  const imgEl = $('#readerImg');
+  const imgUrl = safeUrl(item.image);
+  if (imgUrl) {
+    heroEl.hidden = false;
+    imgEl.src = imgUrl;
+    imgEl.onerror = () => { heroEl.hidden = true; };
+  } else {
+    heroEl.hidden = true;
+    imgEl.src = '';
+  }
+
+  // Metadata
+  $('#readerSource').textContent = item.source || 'News';
+  const timeEl = $('#readerTime');
+  timeEl.textContent = relTime(item.publishedAt);
+  timeEl.dataset.ts = item.publishedAt || 0;
+
+  const authorEl = $('#readerAuthor');
+  authorEl.textContent = item.author ? `· by ${item.author}` : '';
+
+  const readTimeEl = $('#readerReadTime');
+  readTimeEl.textContent = estimateReadTime((item.title || '') + ' ' + (item.summary || ''));
+
+  // Title & Summary
+  $('#readerTitle').textContent = item.title;
+  $('#readerSummary').textContent = item.summary || 'No further summary available in the feed. You can read the full report directly on the publisher’s website using the link below.';
+
+  // Also covered on
+  const alsoEl = $('#readerAlso');
+  const alsoTags = $('#readerAlsoTags');
+  if (item.alsoIn && item.alsoIn.length) {
+    alsoEl.hidden = false;
+    alsoTags.replaceChildren(...item.alsoIn.map(src => el('span', 'reader-also-tag', src)));
+  } else {
+    alsoEl.hidden = true;
+    alsoTags.replaceChildren();
+  }
+
+  // Action links
+  const href = safeUrl(item.link) || '#';
+  const extBtn = $('#readerExtBtn');
+  extBtn.href = href;
+
+  const primLink = $('#readerPrimaryLink');
+  primLink.href = href;
+  $('#readerPrimarySource').textContent = item.source || 'source';
+
+  // Open modal
+  const bd = readerBackdrop();
+  bd.hidden = false;
+  requestAnimationFrame(() => bd.classList.add('show'));
+  $('#readerContent').scrollTop = 0;
+  readerModal().focus();
+}
+
+function closeReader() {
+  if (!readerIsOpen()) return;
+  state.activeStoryId = null;
+  const bd = readerBackdrop();
+  bd.classList.remove('show');
+  setTimeout(() => { if (!state.activeStoryId) bd.hidden = true; }, 220);
+}
+
+function navigateReader(delta) {
+  const items = visibleItems();
+  if (!items.length) return;
+  let idx = items.findIndex(i => i.id === state.activeStoryId);
+  if (idx === -1) idx = 0;
+  let nextIdx = idx + delta;
+  if (nextIdx < 0) nextIdx = items.length - 1;
+  else if (nextIdx >= items.length) nextIdx = 0;
+  openReader(items[nextIdx]);
+}
+
+async function copyReaderLink() {
+  const items = visibleItems();
+  const cur = items.find(i => i.id === state.activeStoryId);
+  if (!cur || !cur.link) return;
+  const copyBtn = $('#readerCopyBtn');
+  try {
+    await navigator.clipboard.writeText(cur.link);
+    const prev = copyBtn.textContent;
+    copyBtn.textContent = '✓';
+    copyBtn.title = 'Link copied!';
+    setTimeout(() => {
+      copyBtn.textContent = prev;
+      copyBtn.title = 'Copy article link';
+    }, 1400);
+  } catch {
+    copyBtn.title = 'Could not copy';
+  }
 }
 
 // ---------------------------------------------------------------- menu
@@ -351,6 +491,15 @@ async function main() {
   menuBtn().addEventListener('click', toggleMenu);
   backdrop().addEventListener('click', () => closeMenu());
 
+  // Reader modal listeners
+  $('#readerCloseBtn').addEventListener('click', closeReader);
+  $('#readerBackdrop').addEventListener('click', e => {
+    if (e.target === $('#readerBackdrop')) closeReader();
+  });
+  $('#readerPrevBtn').addEventListener('click', () => navigateReader(-1));
+  $('#readerNextBtn').addEventListener('click', () => navigateReader(1));
+  $('#readerCopyBtn').addEventListener('click', copyReaderLink);
+
   const sourcesBtn = $('#sourcesBtn');
   sourcesBtn.addEventListener('click', () => {
     const box = $('#sources');
@@ -360,6 +509,13 @@ async function main() {
 
   // Keyboard shortcuts.
   document.addEventListener('keydown', e => {
+    // Reader modal shortcuts take precedence when modal is open.
+    if (readerIsOpen()) {
+      if (e.key === 'Escape') { e.preventDefault(); closeReader(); return; }
+      if (e.key === 'ArrowLeft' || e.key === 'j' || e.key === 'J') { e.preventDefault(); navigateReader(-1); return; }
+      if (e.key === 'ArrowRight' || e.key === 'k' || e.key === 'K') { e.preventDefault(); navigateReader(1); return; }
+    }
+
     // Escape closes the menu from anywhere, including the search box.
     if (e.key === 'Escape' && menuIsOpen()) { closeMenu(); return; }
     if (e.target.tagName === 'INPUT' || e.metaKey || e.ctrlKey || e.altKey) {
@@ -381,6 +537,10 @@ async function main() {
     for (const n of feedEl.querySelectorAll('.time')) {
       n.textContent = relTime(Number(n.dataset.ts));
     }
+    const readerTime = $('#readerTime');
+    if (readerTime && readerTime.dataset.ts) {
+      readerTime.textContent = relTime(Number(readerTime.dataset.ts));
+    }
     if (state.updatedAt) updatedEl.textContent = `Updated ${relTime(state.updatedAt)}`;
   }, 30_000);
 
@@ -391,3 +551,4 @@ async function main() {
 }
 
 main();
+
